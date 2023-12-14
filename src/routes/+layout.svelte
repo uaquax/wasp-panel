@@ -50,6 +50,7 @@
 
   .side-menu {
     color: #eee;
+    text-align: center;
     background: #1f2335;
     max-width: 18rem;
     min-width: 18rem;
@@ -57,6 +58,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
+    border-radius: 0rem 3rem 3rem 0rem;
   }
 
   .side-tab {

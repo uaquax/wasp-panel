@@ -7,12 +7,18 @@
   $: lastCommand = "";
   $: messages = [];
 
-  function sendCommand() {
-    ws.send(command);
-    console.log(command);
+  $: isLoading = false;
 
-    lastCommand = command;
-    command = "";
+  function sendCommand() {
+    console.log(command.length);
+    if (command.length >= 1) {
+      isLoading = true;
+      ws.send(command);
+      console.log(command);
+
+      lastCommand = command;
+      command = "";
+    }
   }
 
   function sendCommandKeyboard(event) {
@@ -35,14 +41,19 @@
     };
 
     ws.onmessage = function (event) {
-      console.log(event);
-      messages = [...messages, { command: lastCommand, output: event.data }];
-      updateScroll();
+      if (event.data.length >= 1) {
+        messages = [...messages, { command: lastCommand, output: event.data }];
+        updateScroll();
+        isLoading = false;
+      }
     };
   });
 </script>
 
 <div class="container">
+  {#if isLoading}
+    <p>Loading ...</p>
+  {/if}
   <div class="output">
     {#each messages as message}
       <div class="msg-container">
@@ -87,8 +98,8 @@
     text-align: left;
     border-radius: 0.5rem;
     margin: 10px;
-    word-wrap: break-word; /* Breaks long words to prevent overflow */
-    white-space: normal; /* Ensures text wraps */
+    word-wrap: break-word;
+    white-space: pre-wrap;
     overflow-wrap: break-word;
   }
 
