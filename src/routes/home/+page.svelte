@@ -6,36 +6,8 @@
   import "../../app.css";
 
   // @ts-ignore
-  $: data = {
-    cpu: { brand: "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz", frequency: 2592 },
-    ram: 17085616128,
-    ram_used: 10790658048,
-    uptime: 1071341,
-    os: "Windows 11 Pro",
-    networks: [
-      {
-        name: "VMware Network Adapter VMnet1",
-        total_income: 55,
-        total_outcome: 2065,
-      },
-      { name: "vEthernet (WSL)", total_income: 1204, total_outcome: 8187102 },
-      {
-        name: "VMware Network Adapter VMnet8",
-        total_income: 55,
-        total_outcome: 5687,
-      },
-      { name: "Wi-Fi", total_income: 7985059091, total_outcome: 163631332 },
-    ],
-    disks: [
-      { name: "", size: 317920899072, free: 183748341760, file_system: "NTFS" },
-      {
-        name: "Local Disk",
-        size: 681451712512,
-        free: 574148104192,
-        file_system: "NTFS",
-      },
-    ],
-  };
+  $: data = {};
+  $: isVisible = false;
 
   function toHHMMSS(seconds) {
     const hours = Math.floor(seconds / 3600);
@@ -49,11 +21,9 @@
 
   onMount(async () => {
     try {
-      const response = await axios.get(
-        "http://localhostfutures_util:8000/api/sysinfo"
-      );
+      const response = await axios.get("http://localhost:8181/sysinfo");
       data = response.data;
-      console.log(response);
+      isVisible = true;
     } catch (error) {
       console.error(error);
     }
@@ -61,27 +31,31 @@
 </script>
 
 <section>
-  <div class="block">
-    <b>OS: </b> <i>{data.os}</i>
-  </div>
-  <div class="block">
-    <b>CPU: </b>
-    <br />
-    <i>{data.cpu.brand}</i>
-    <br />
-    <br />
-    <b>Frequency: </b><i>{Math.round((data.cpu.frequency / 1000) * 10) / 10}</i>
-    GHz
-  </div>
-  <div class="block">
-    <b>RAM: </b>
-    <i>{Math.round((data.ram_used / 1024 / 1024 / 1024) * 10) / 10} GB</i> /
-    <i>{Math.round((data.ram / 1024 / 1024 / 1024) * 10) / 10} GB</i>
-  </div>
-  <div class="block">
-    <b>Uptime: </b>
-    <i>{toHHMMSS(data.uptime)}</i>
-  </div>
+  {#if isVisible}
+    <div class="block">
+      <b>OS: </b> <i>{data.os}</i>
+    </div>
+    <div class="block">
+      <b>CPU: </b>
+      <br />
+      <i>{data.cpu.brand}</i>
+      <br />
+      <br />
+      <b>Frequency: </b><i
+        >{Math.round((data.cpu.frequency / 1000) * 10) / 10}</i
+      >
+      GHz
+    </div>
+    <div class="block">
+      <b>RAM: </b>
+      <i>{Math.round((data.ram_used / 1024 / 1024 / 1024) * 10) / 10} GB</i> /
+      <i>{Math.round((data.ram / 1024 / 1024 / 1024) * 10) / 10} GB</i>
+    </div>
+    <div class="block">
+      <b>Uptime: </b>
+      <i>{toHHMMSS(data.uptime)}</i>
+    </div>
+  {/if}
 </section>
 
 <style>
